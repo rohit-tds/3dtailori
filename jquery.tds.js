@@ -21,7 +21,7 @@
 		_renderer,_composerBeckmann,_repeatCtrl,
 	    _imgSource, _$imgSource, _selectedModel, _modals = [],
 		_that, _keySize, _ivSize, _iterations,
-		_getImageData,_imgData,IsBbox=true,FrontLight,
+		_getImageData,_imgData,IsBbox=true,
 		_bbox = {
 				"min" : {"x":0,"y":0,"z":0},
 				"max" :	{"x":0,"y":0,"z":0},
@@ -286,12 +286,6 @@
 					var featureId = $(this).attr("data-tds-element");
 					that._CreateRenderObject(productDetailId,featureId);
 					//alert($(this).attr("data-tds-element"));
-					//_camera.position.y += 90;
-					//_controls.target.set(100,10,10);
-					var position = new THREE.Vector3();
-					var objs = that._RenderObject[productDetailId].obj.getObject();
-					position.getPositionFromMatrix( objs.children[0].matrixWorld );
-					console.log(position.x + ',' + position.y + ',' + position.z);
 
 					var callback = that.Option("OnFeatureChange");
 					if (typeof callback == 'function')
@@ -316,8 +310,6 @@
 					var mouseX = ((e.clientX - _$imgSource.offset().left) /_$imgSource.innerWidth()) * 2 - 1;
 					var mouseY =-(((e.clientY - _$imgSource.offset().top) / _$imgSource.innerHeight())  * 2 - 1);
 					var oldSelectedObject = _selectedModel;
-					
-					_controls.target.set(10,100,150);
 
 					//Show Selection
 					_setSelectedObject(mouseX,mouseY,function(){
@@ -866,36 +858,35 @@
 	    // _camera.add(_dirLight3);
 
 
-		//_scene.add(new THREE.AmbientLight(0x878787, 1.0));
+		_scene.add(new THREE.AmbientLight(0x878787, 1.0));
 
 
-		FrontLight = new THREE.DirectionalLight(0xffffff, 0.7);
+		var  FrontLight = new THREE.DirectionalLight(0xffffff, 0.7);
         FrontLight.position.set(15, 100, 200);
-		//FrontLight.position.copy( _camera.position );
 		_scene.add( FrontLight );
 
 		var helper = new THREE.DirectionalLightHelper( FrontLight, 5, 0xd02001);
-		_scene.add( helper );
+		//_scene.add( helper );
 
 
 
 		var  FrontCenterLight = new THREE.DirectionalLight(0xffffff, 0.3);
         FrontCenterLight.position.set(0, 0, 200);
-		//_scene.add( FrontCenterLight );
+		_scene.add( FrontCenterLight );
 
 		var helper = new THREE.DirectionalLightHelper( FrontCenterLight, 5, 0xd02001);
 		//_scene.add( helper );
 
 		 var  BackCenterLight = new THREE.DirectionalLight(0xffffff, 0.3);
         BackCenterLight.position.set(0, 0, -200);
-		//_scene.add( BackCenterLight );
+		_scene.add( BackCenterLight );
 
 		var helper = new THREE.DirectionalLightHelper( BackCenterLight, 5, 0xd02001);
 		//_scene.add( helper );
 
 		 var  BackLight = new THREE.DirectionalLight(0xffffff, 0.7);
         BackLight.position.set(150, 500, -200);
-		//_scene.add( BackLight );
+		_scene.add( BackLight );
 
 		var helper = new THREE.DirectionalLightHelper( BackLight, 5, 0xd02001);
 		//_scene.add( helper );
@@ -945,42 +936,19 @@
 
 	    _controls = new THREE.OrbitControls( _camera, _renderer.domElement );
 	    _controls.target.set( 0, 1, 0);
-	    _controls.rotateSpeed = 1.4;
+	    _controls.rotateSpeed = 0.9;
 	    _controls.zoomSpeed = 1.4;
 	    _controls.enableDamping = true;
-	    _controls.dampingFactor = 0.07;
+	    _controls.dampingFactor = 0.151;
 	    _controls.minPolarAngle = Math.PI / 2;
 	    _controls.maxPolarAngle = Math.PI / 2;
-		_controls.minDistance = 35;
-		_controls.maxDistance = 100;
-		//_controls.autoRotate = true;
 
-	    
+	    _controls.update();
 
 	    _repeatCtrl = new function () {
-	        this.minDistance = 35;
-			this.maxDistance = 100;
+	        this.repeats = 10;
 	    };
 
-		var gui = new dat.GUI();
-		gui.add(_repeatCtrl, 'minDistance', 0, 500).onChange(function(e){
-			_controls.minDistance = e;
-		});
-		gui.add(_repeatCtrl, 'maxDistance', 0, 500).onChange(function(e){
-			_controls.maxDistance = e;
-		});
-		var ZoomIn = { ZoomIn:function(){ 
-											// for(var i = 1 ;  i <= 25 ; i++)
-												// _camera.position.z -= 1; 
-											_controls.customeZoomIn(3);
-										}};
-		gui.add(ZoomIn,'ZoomIn');
-		var ZoomOut = { ZoomOut:function(){
-											// for(var i = 1 ;  i <= 25 ; i++)
-												// _camera.position.z += 1; 
-											_controls.customeZoomOut(3);
-										}};
-		gui.add(ZoomOut,'ZoomOut');
 		// var axes = new THREE.AxisHelper(1000);
 		// axes.position.set(0,0,0);
 		// _scene.add(axes);
@@ -999,7 +967,6 @@
 	},
 	_animate = function() {
 
-		_controls.update();
 		requestAnimationFrame(_animate);
 		_rendering();
 
@@ -1007,7 +974,6 @@
 	_rendering = function() {
 
 		_renderer.clear();
-		FrontLight.position.y = _camera.position.y;
 		_renderer.render(_scene, _camera);
 		if(_getImageData == true){
             _imgData = _renderer.domElement.toDataURL();
