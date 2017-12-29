@@ -282,6 +282,7 @@
 				// Product Feature Click Event
 				$("body").on("click","[data-tds-element]",function(e){
 					e.stopPropagation();
+					_controls.reset();
 					var productDetailId = $(this).attr("data-tds-key");
 					var featureId = $(this).attr("data-tds-element");
 					that._CreateRenderObject(productDetailId,featureId);
@@ -763,6 +764,12 @@
 		return returnData;
 
 	},
+	zoom : function(flag){
+		if(flag.toLowerCase() == "in")
+			_controls.zoomIn();
+		else
+			_controls.zoomOut();
+	},
 	ImageObj : function(){
 		var objs = new OBJImg({
 					image: "shirt.obj.png",
@@ -934,7 +941,7 @@
 	    // Adding Events
 	    window.addEventListener( 'resize',_onWindowResize , false );
 
-	    _controls = new THREE.OrbitControls( _camera, _renderer.domElement );
+	    _controls = new THREE.OrbitControls( _camera, _renderer.domElement,_scene );
 	    _controls.target.set( 0, 1, 0);
 	    _controls.rotateSpeed = 0.9;
 	    _controls.zoomSpeed = 1.4;
@@ -942,6 +949,10 @@
 	    _controls.dampingFactor = 0.151;
 	    _controls.minPolarAngle = Math.PI / 2;
 	    _controls.maxPolarAngle = Math.PI / 2;
+		_controls.minDistance = 35;
+		_controls.maxDistance = 100;
+		_controls.enableZoom = true;
+		_controls.enableFocusZoom = true;
 
 	    _controls.update();
 
